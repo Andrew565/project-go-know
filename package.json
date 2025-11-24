@@ -1,0 +1,24 @@
+{
+  "name": "project-go-know",
+  "version": "0.0.1",
+  "description": "A digital card game based on Gregg Jewell's Going Knowhere.",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cardgame"
+  ],
+  "author": "Andrew Steele",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@andrewscripts/deck-of-cards.js": "^2.0.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.45.1"
+  }
+}

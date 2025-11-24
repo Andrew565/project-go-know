@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Go-Know</title>
+    <link href="./src/index.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>Project Go-Know</h1>
+    </header>
+
+    <section id="gameEndPopus"></section>
+
+    <section id="gameControls"></section>
+
+    <div class="play-area">
+      <main class="grid">
+        <div class="grid-row labels">
+          <div class="label">K Disc</div>
+          <div class="label">Thresh</div>
+          <div class="label">Act. K</div>
+          <div class="label">Act. O</div>
+          <div class="label">Veil</div>
+        </div>
+        <div class="grid-row">
+          <div id="knowbleDiscard" class="pile pile--hidden">K Disc</div>
+          <div id="threshold" class="pile">Thresh</div>
+          <div id="activeKnowble" class="pile">Act. K</div>
+          <div id="activeObstacle" class="pile">Act. O</div>
+          <div id="veil" class="pile">Veil</div>
+        </div>
+
+        <div class="grid-row counters-row">
+          <div id="targetCounters">
+            <p>Trial Score: <span id="trialScore">0</span></p>
+            <p>Difficulty: <span id="trialDifficulty">0</span></p>
+          </div>
+          <div id="currentCounters">
+            <p>Current Score: <span id="currentScore">0</span></p>
+            <p>Current Effort: <span id="currentEffort">0</span></p>
+          </div>
+        </div>
+
+        <div class="inventory-piles">
+          <div class="starting-piles">
+            <div class="grid-row">
+              <div id="source" class="pile"></div>
+              <div id="i1" class="pile"></div>
+              <div id="i3" class="pile"></div>
+              <div id="i5" class="pile"></div>
+            </div>
+
+            <div class="grid-row">
+              <div id="discard" class="pile pile--hidden"></div>
+              <div id="i2" class="pile"></div>
+              <div id="i4" class="pile"></div>
+              <div id="i6" class="pile"></div>
+            </div>
+          </div>
+          <div class="extra-pile">
+            <div id="i7" class="pile pile--locked extra-pile">Locked</div>
+          </div>
+        </div>
+      </main>
+
+      <aside id="hold"></aside>
+    </div>
+
+    <footer>
+      <p>
+        Like this game? Support me with a ko-fi and/or support the original
+        creator (Gregg Jewell) on itch.io
+      </p>
+    </footer>
+
+    <template id="faceUpCardTemplate">
+      <div class="gk-card gk-card--face-up">
+        <div class="gk-card__corner">
+          <div class="gk-card__rank"></div>
+          <div class="gk-card__suit"></div>
+        </div>
+        <div class="gk-card__name"></div>
+      </div>
+    </template>
+
+    <template id="faceDownCardTemplate">
+      <div class="gk-card gk-card--face_down">
+        <div class="gk-card__back">GK</div>
+      </div>
+    </template>
+
+    <script src="bundle.js" type="text/javascript"></script>
+  </body>
+</html>

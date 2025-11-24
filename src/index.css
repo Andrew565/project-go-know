@@ -1,0 +1,112 @@
+:root {
+  --pile-height: 94px;
+  --pile-width: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Trattatello', serif;
+  font-size: 20px;
+}
+
+.play-area {
+  display: flex;
+  margin: 0 auto;
+  width: 80vw;
+}
+
+aside {
+  border: 2px solid black;
+  width: calc(var(--pile-width) + 10px);
+}
+
+.grid {
+  width: 65vw;
+}
+
+.inventory-piles {
+  display: flex;
+}
+
+.grid-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 5px 0;
+}
+
+.starting-piles {
+  width: 80%;
+}
+
+.extra-pile {
+  display: flex;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-row.labels {
+  .label {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width: 6ch;
+    text-align: center;
+    margin: 0 5px;
+  }
+}
+
+.grid-row.counters-row {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  justify-content: center;
+  background-color: lightgray;
+
+  div {
+    margin: 0 10px;
+  }
+}
+
+.pile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--pile-height);
+  width: var(--pile-width);
+}
+
+.pile--locked {
+  background-color: gray;
+}
+
+.inventory-piles .gk-card {
+  cursor: pointer;
+}
+
+.gk-card {
+  background-color: white;
+  border: 1px solid darkgray;
+  border-radius: 5px;
+  height: 90px;
+  width: 60px;
+  z-index: var(--index);
+  cursor: default;
+}
+
+.gk-card:not(:first-child) {
+  margin-left: -60px;
+}
+
+.gk-card .gk-card__corner {
+  font-size: 1.5em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gk-card.red .gk-card__suit {
+  color: red;
+}
