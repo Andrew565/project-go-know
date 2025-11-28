@@ -1,9 +1,12 @@
-# Things to Do
+# TODO:
 
 - [X] Rewrite everything to match latest name changes (Weapn => Obst, Arsenal => Inv, etc.)
 - [X] Make 1/11's in Inventory just 1's unless AcesChoice is true
-- [ ] Make inventory cards selectable
-- [ ] Calculate current score and resistance
+- [X] Fix all outstanding type and JSDOC errors
+- [X] Make inventory cards selectable
+- [X] Calculate current score and resistance
+- [X] Add "Play These Cards" button
+- [ ] Wire up "Play These Cards" button so that it scores the cards and updates the UI
 - [ ] Do what is needed to make a "Merchant's Solitaire" mode before adding the "GK" campaign?
 - [ ] Handle "Cruel Kings" (King of clubs, gets an extra obstacle)
 - [ ] Handle hazards (lock highest-value card from Inventory)

@@ -9,7 +9,6 @@
 
 body {
   font-family: 'Trattatello', serif;
-  font-size: 20px;
 }
 
 .play-area {
@@ -61,6 +60,7 @@ aside {
 .grid-row.counters-row {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   justify-content: center;
+  align-items: center;
   background-color: lightgray;
 
   div {
@@ -109,4 +109,45 @@ aside {
 
 .gk-card.red .gk-card__suit {
   color: red;
+}
+
+.pile.selected {
+  border-color: blue;
+  box-shadow: 0 0 5px blue;
+}
+
+#playTheseCardsButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#playTheseCardsButton:disabled {
+  background-color: #868686; /* Gray */
+  color: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+#playTheseCardsButton:not(:disabled) {
+  background-color: #228b22; /* Forest Green */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#playTheseCardsButton:not(:disabled):hover {
+  background-color: #006400; /* Dark Green */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+#playTheseCardsButton:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

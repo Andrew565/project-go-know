@@ -309,6 +309,19 @@ const makeFaceDownCard = (index) => {
   return faceDownCard;
 };
 
+/**
+ * Toggle the selected state of an inventory slot
+ * @param {string} key - The key of the inventory slot (e.g., 'i1')
+ */
+const toggleSelection = (key) => {
+  console.log("Toggling selection for", key);
+  const slot = Piles.inventory[key];
+  if (slot && slot.card && !slot.locked) {
+    slot.selected = !slot.selected;
+    renderInventorySlots();
+  }
+};
+
 // NEW GAME LOGIC
 const NewGame = () => {
   // Draw up all of the cards from the draw piles
@@ -320,8 +333,8 @@ const NewGame = () => {
   // Update the UI to reflect the new game state
   renderPiles();
 
-  // Update counters
-  updateCounters();
+  // Setup event listeners
+  setupEventListeners();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -371,6 +384,19 @@ function updateCounters() {
   trialDifficultyElement.textContent = `${Counters.trialDifficulty}`;
   currentScoreElement.textContent = `${Counters.currentScore}`;
   currentEffortElement.textContent = `${Counters.currentEffort}`;
+
+  // Enable/Disable the Play These Cards button
+  const playButton = document.getElementById("playTheseCardsButton");
+  if (playButton) {
+    if (
+      Counters.currentScore >= Counters.trialScore &&
+      Counters.currentEffort >= Counters.trialDifficulty
+    ) {
+      playButton.removeAttribute("disabled");
+    } else {
+      playButton.setAttribute("disabled", "true");
+    }
+  }
 }
 
 /** Updates the UI to reflect the current state of the piles */
@@ -425,6 +451,7 @@ function renderPiles() {
   renderInventorySlots();
 }
 
+/** Updates the UI to reflect the current state of the inventory slots */
 function renderInventorySlots() {
   for (let i = 1; i <= 7; i++) {
     const inventoryKey = `i${i}`;
@@ -434,7 +461,7 @@ function renderInventorySlots() {
     if (inventoryElement) {
       // If not blocked by a hazard and the slot has a card, render it face up
       if (
-        !inventoryElement.classList.contains("pile--blocked") &&
+        !inventoryElement.classList.contains("pile--locked") &&
         inventorySlot.card
       ) {
         // If the card is an Ace and acesChoice is locked, set its value to 1
@@ -443,12 +470,38 @@ function renderInventorySlots() {
           inventorySlot.card.value = 1;
         }
         const cardEl = makeFaceUpCard(inventorySlot.card, i - 1);
+
         inventoryElement.replaceChildren(cardEl);
       } else if (!inventoryElement.classList.contains("pile--locked")) {
         // If the slot is locked, render a face down card
         const cardEl = makeFaceDownCard(i - 1);
         inventoryElement.replaceChildren(cardEl);
       }
+
+      // Add selected class to the pile if selected
+      if (inventorySlot.selected) {
+        inventoryElement.classList.add("selected");
+      } else {
+        inventoryElement.classList.remove("selected");
+      }
+    }
+  }
+
+  updateCounters();
+}
+
+/**
+ * Setup event listeners for the game
+ */
+function setupEventListeners() {
+  // Add click listeners to inventory piles
+  for (let i = 1; i <= 7; i++) {
+    const inventoryKey = `i${i}`;
+    const inventoryElement = document.getElementById(inventoryKey);
+    if (inventoryElement) {
+      inventoryElement.onclick = () => {
+        toggleSelection(inventoryKey);
+      };
     }
   }
 }
