@@ -24,9 +24,11 @@ import { DeckOfCards, StandardCards } from "@andrewscripts/deck-of-cards.js";
  * @typedef {Object} Piles
  * @property {DeckOfCards<GKCard>} source - The main deck of cards
  * @property {{[x: string]: InventoryCard}} inventory - The inventory of cards, each with a slot (a1 to a7)
+ * @property {GKCard[]} inventoryDiscard - The discard pile for the Inventory
  * @property {GKCard[]} hold - The Knowstones pile
  * @property {DeckOfCards<GKCard>} threshold - The Threshold deck of cards
  * @property {GKCard|null} thresholdActive - The active Knowble
+ * @property {GKCard[]} thresholdDiscard - The discard pile for the Threshold
  * @property {DeckOfCards<GKCard>} veil - The Obstacles deck of cards
  * @property {GKCard|null} obstaclesActive - The active Obstacle from the Veil
  */
@@ -197,9 +199,11 @@ const Piles = {
       locked: true,
     },
   },
+  inventoryDiscard: [],
   hold: [],
   threshold: Threshold,
   thresholdActive: null, // The active Knowble
+  thresholdDiscard: [],
   veil: Veil,
   obstaclesActive: null, // The active obstacle
 };
@@ -245,7 +249,7 @@ const discardCard = (fromPile, toDeck) => {
   }
 };
 
-/** Move all cards from the arsenal to the discard pile */
+/** Move all cards from the inventory to the discard pile */
 const moveAllInventoryToDiscard = () => {
   Object.keys(Piles.inventory).forEach((key) => {
     discardCard(Piles.inventory[key], Piles.source);
@@ -314,7 +318,6 @@ const makeFaceDownCard = (index) => {
  * @param {string} key - The key of the inventory slot (e.g., 'i1')
  */
 const toggleSelection = (key) => {
-  console.log("Toggling selection for", key);
   const slot = Piles.inventory[key];
   if (slot && slot.card && !slot.locked) {
     slot.selected = !slot.selected;
@@ -504,6 +507,14 @@ function setupEventListeners() {
       };
     }
   }
+
+  // Add click listener to play button
+  const playButton = document.getElementById("playTheseCardsButton");
+  if (playButton) {
+    playButton.onclick = () => {
+      playCards();
+    };
+  }
 }
 
 /**
@@ -548,12 +559,12 @@ function initPiles() {
   // Init Threshold active card
   Piles.thresholdActive = getTopCard(Piles.threshold);
 
-  // Init Weapons Rack
-  const weaponsCards = Piles.source.drawFromDrawPile(13);
-  Piles.veil.addToDrawPile(weaponsCards);
+  // Init Veil with Obstacles
+  const obstaclesCards = Piles.source.drawFromDrawPile(13);
+  Piles.veil.addToDrawPile(obstaclesCards);
   Piles.obstaclesActive = getTopCard(Piles.veil);
 
-  // Initialize Arsenal slots with cards from the Armory
+  // Initialize Inventory slots with cards from the Source
   Object.keys(Piles.inventory).forEach((key) => {
     if (!Piles.inventory[key].locked) {
       const card = getTopCard(Piles.source);
@@ -570,13 +581,13 @@ function initPiles() {
  * This function should be called when starting a new game
  */
 function resetPiles() {
-  // Reset Arsenal cards
+  // Reset Inventory cards
   moveAllInventoryToDiscard();
-  let armoryCards = getAllFromPile(Piles.source.discardPile);
-  armoryCards.push(...getAllFromPile(Piles.source.drawPile));
-  armoryCards.push(...getAllFromPile(Piles.veil.discardPile));
-  armoryCards.push(...getAllFromPile(Piles.veil.drawPile));
-  Piles.source.addToDrawPile(armoryCards);
+  let inventoryCards = getAllFromPile(Piles.source.discardPile);
+  inventoryCards.push(...getAllFromPile(Piles.source.drawPile));
+  inventoryCards.push(...getAllFromPile(Piles.veil.discardPile));
+  inventoryCards.push(...getAllFromPile(Piles.veil.drawPile));
+  Piles.source.addToDrawPile(inventoryCards);
   Piles.source.shuffle(7);
 
   // Reset Threshold deck
@@ -587,4 +598,84 @@ function resetPiles() {
 
   // Reset Knowstones pile
   Piles.hold = [];
+}
+
+/**
+ * Play the selected cards
+ */
+function playCards() {
+  // Get the current knowble and obstacle
+  const activeKnowble = Piles.thresholdActive;
+  const activeObstacle = Piles.obstaclesActive;
+
+  // If there is no active knowble or obstacle, return
+  if (!activeKnowble || !activeObstacle) {
+    return;
+  }
+
+  // Remove the active knowble from the thresholdActive slot
+  Piles.thresholdActive = null;
+
+  // Remove the active obstacle from the obstaclesActive slot
+  Piles.obstaclesActive = null;
+
+  const knowbleValue = activeKnowble.value;
+  const knowbleSuit = activeKnowble.suit;
+
+  // Get the obstacle value
+  const obstacleValue = activeObstacle.value;
+
+  // Get the selected cards
+  const selectedCards = Object.values(Piles.inventory).filter(
+    (slot) => slot.selected
+  ).map((slot) => slot.card);
+
+  // Tally up the values of the selected cards whose suits match the knowble
+  const totalValue = selectedCards.reduce((total, card) => {
+    if (card && card.suit === knowbleSuit) {
+      return total + card.value;
+    }
+    return total;
+  }, 0);
+
+  // If the total value is greater than or equal to the knowble value, 'score' the cards by moving the knowble to the hold pile, otherwise move it to the threshold discard pile
+  if (totalValue >= knowbleValue + obstacleValue) {
+    Piles.hold.push(activeKnowble);
+  } else {
+    Piles.thresholdDiscard.push(activeKnowble);
+  }
+
+  // Move the selected cards to the discard pile and reset the slots
+  Object.values(Piles.inventory).forEach((slot) => {
+    if (slot.selected && slot.card) {
+      Piles.inventoryDiscard.push(slot.card);
+      slot.card = null;
+      slot.selected = false;
+    }
+  });
+
+  // Draw new cards to replace the selected cards
+  Object.values(Piles.inventory).forEach((slot) => {
+    if (!slot.card) {
+      const card = getTopCard(Piles.source);
+      if (card) {
+        slot.card = card;
+      }
+    }
+  });
+
+  // Draw a new obstacle
+  Piles.obstaclesActive = getTopCard(Piles.veil);
+
+  // Draw a new knowble
+  Piles.thresholdActive = getTopCard(Piles.threshold);
+
+  // If there is no active knowble or obstacle, the game is over
+  if (!Piles.obstaclesActive || !Piles.thresholdActive) {
+    // endGame(); TODO: Implement end game logic
+    return;
+  }
+
+  // Update the UI
+  renderPiles();
 }

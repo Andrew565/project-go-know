@@ -6,9 +6,10 @@
 - [X] Make inventory cards selectable
 - [X] Calculate current score and resistance
 - [X] Add "Play These Cards" button
-- [ ] Wire up "Play These Cards" button so that it scores the cards and updates the UI
+- [X] Wire up "Play These Cards" button so that it scores the cards and updates the UI
+- [X] Add a "play these cards" button once selections have been made and requirements have been met (disable when reqs not met)
 - [ ] Do what is needed to make a "Merchant's Solitaire" mode before adding the "GK" campaign?
 - [ ] Handle "Cruel Kings" (King of clubs, gets an extra obstacle)
 - [ ] Handle hazards (lock highest-value card from Inventory)
 - [ ] Add buttons for deciding between 1 and 11 when AcesChoice is true
-- [ ] Add a "play these cards" button once selections have been made and requirements have been met (disable when reqs not met)
+- [ ] Add a "new game" button
