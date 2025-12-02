@@ -1,4 +1,5 @@
 import { DeckOfCards, StandardCards } from "@andrewscripts/deck-of-cards.js";
+import { Knowstones } from "./knowstones.js";
 
 // # TYPE DEFINITIONS
 
@@ -668,10 +669,21 @@ function playCards() {
 
   // If there is no active knowble or obstacle, the game is over
   if (!Piles.obstaclesActive || !Piles.thresholdActive) {
-    // endGame(); TODO: Implement end game logic
+    endGame();
     return;
   }
 
   // Update the UI
   renderPiles();
+}
+
+function endGame() {
+  // Determine final score by adding up the number of cards in the hold pile
+  const knowstones = Piles.hold.length;
+
+  // Save final score to local storage
+  Knowstones.save(knowstones);
+
+  // Show final score
+  alert(`Game Over! You collected ${knowstones} knowstones!`);
 }
