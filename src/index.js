@@ -648,19 +648,15 @@ function playCards() {
   // Move the selected cards to the discard pile and reset the slots
   Object.values(Piles.inventory).forEach((slot) => {
     if (slot.selected && slot.card) {
+      // Move the selected cards to the discard pile
       Piles.inventoryDiscard.push(slot.card);
-      slot.card = null;
-      slot.selected = false;
-    }
-  });
 
-  // Draw new cards to replace the selected cards
-  Object.values(Piles.inventory).forEach((slot) => {
-    if (!slot.card) {
+      // Draw new cards to replace the selected cards
       const card = getTopCard(Piles.source);
-      if (card) {
-        slot.card = card;
-      }
+      slot.card = card;
+
+      // Reset the selection
+      slot.selected = false;
     }
   });
 
