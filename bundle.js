@@ -55,7 +55,7 @@
    * @property {GKCard|null} thresholdActive - The active Knowble
    * @property {GKCard[]} thresholdDiscard - The discard pile for the Threshold
    * @property {DeckOfCards<GKCard>} veil - The Obstacles deck of cards
-   * @property {GKCard|null} obstaclesActive - The active Obstacle from the Veil
+   * @property {GKCard[]} obstaclesActive - The active Obstacles from the Veil (can be multiple)
    */
 
   /** @typedef {{[x: string]: string}} ObjectMap */
@@ -230,7 +230,7 @@
     thresholdActive: null, // The active Knowble
     thresholdDiscard: [],
     veil: Veil,
-    obstaclesActive: null, // The active obstacle
+    obstaclesActive: [], // The active obstacles
   };
 
   const Counters = {
@@ -374,7 +374,7 @@
   function updateCounters() {
     // Get the active Knowble and Weapon
     const activeKnowble = Piles.thresholdActive;
-    const activeObstacle = Piles.obstaclesActive;
+    const activeObstacles = Piles.obstaclesActive;
 
     // Calculate the target resistance
     /** @type {{[key: number]: number}} */
@@ -384,9 +384,12 @@
       13: 4,
     };
 
+    // Sum up all active obstacles
+    const obstaclesValue = activeObstacles.reduce((sum, card) => sum + (card?.value || 0), 0);
+
     // Update the target score and resistance
     Counters.trialScore =
-      (activeKnowble?.value || 0) + (activeObstacle?.value || 0);
+      (activeKnowble?.value || 0) + obstaclesValue;
     const difficulty = activeKnowble?.value || 11;
     Counters.trialDifficulty = difficulties[difficulty] || 0;
 
@@ -452,7 +455,7 @@
         targetElement: veilElement,
       },
       obstaclesActive: {
-        pile: [Piles.obstaclesActive],
+        pile: Piles.obstaclesActive,
         targetElement: activeObstacleElement,
       },
       source: {
@@ -559,14 +562,22 @@
     // Make card elements
     const pileLength = pileClone.length;
     const cardEls = pileClone.map((card, index) => {
+      // For obstaclesActive, we always show all cards face up
+      if (pileName === "obstaclesActive") {
+        if (card) {
+            // If the card is an ace, set it's initial and value to 11
+            if (card.nameRank === "Ace") {
+              card.initial = "11";
+              card.value = 11;
+            }
+            return makeFaceUpCard(card, index);
+        }
+        return null;
+      }
+
       if (index < pileLength - 1 || !unlocked[pileName]) {
         return makeFaceDownCard(index);
       } else if (card) {
-        // If pileName is obstaclesActive and the card is an ace, set it's initial and value to 11
-        if (pileName === "obstaclesActive" && card.nameRank === "Ace") {
-          card.initial = "11";
-          card.value = 11;
-        }
         return makeFaceUpCard(card, index);
       }
       return null;
@@ -587,7 +598,7 @@
     // Init Veil with Obstacles
     const obstaclesCards = Piles.source.drawFromDrawPile(13);
     Piles.veil.addToDrawPile(obstaclesCards);
-    Piles.obstaclesActive = getTopCard(Piles.veil);
+    drawObstaclesFor(Piles.thresholdActive);
 
     // Initialize Inventory slots with cards from the Source
     Object.keys(Piles.inventory).forEach((key) => {
@@ -631,24 +642,24 @@
   function playCards() {
     // Get the current knowble and obstacle
     const activeKnowble = Piles.thresholdActive;
-    const activeObstacle = Piles.obstaclesActive;
+    const activeObstacles = Piles.obstaclesActive;
 
     // If there is no active knowble or obstacle, return
-    if (!activeKnowble || !activeObstacle) {
+    if (!activeKnowble || activeObstacles.length === 0) {
       return;
     }
 
     // Remove the active knowble from the thresholdActive slot
     Piles.thresholdActive = null;
 
-    // Remove the active obstacle from the obstaclesActive slot
-    Piles.obstaclesActive = null;
+    // Remove the active obstacles from the obstaclesActive slot
+    Piles.obstaclesActive = [];
 
     const knowbleValue = activeKnowble.value;
     const knowbleSuit = activeKnowble.suit;
 
     // Get the obstacle value
-    const obstacleValue = activeObstacle.value;
+    const obstacleValue = activeObstacles.reduce((sum, card) => sum + card.value, 0);
 
     // Get the selected cards
     const selectedCards = Object.values(Piles.inventory).filter(
@@ -685,14 +696,14 @@
       }
     });
 
-    // Draw a new obstacle
-    Piles.obstaclesActive = getTopCard(Piles.veil);
-
     // Draw a new knowble
     Piles.thresholdActive = getTopCard(Piles.threshold);
 
+    // Draw new obstacles based on the new knowble
+    drawObstaclesFor(Piles.thresholdActive);
+
     // If there is no active knowble or obstacle, the game is over
-    if (!Piles.obstaclesActive || !Piles.thresholdActive) {
+    if (Piles.obstaclesActive.length === 0 || !Piles.thresholdActive) {
       endGame();
       return;
     }
@@ -710,6 +721,38 @@
 
     // Show final score
     alert(`Game Over! You collected ${knowstones} knowstones!`);
+  }
+
+  /**
+   * Draw obstacles for the active knowble
+   * @param {GKCard | null} knowble - The active knowble
+   */
+  function drawObstaclesFor(knowble) {
+    if (!knowble) {
+      Piles.obstaclesActive = [];
+      return;
+    }
+
+    // Check for King of Clubs (Cruel Kings rule)
+    const isCruelKing = knowble.nameRank === "King" && knowble.suit === "Clubs";
+    const numToDraw = isCruelKing ? 2 : 1;
+
+    // Draw obstacles
+    const drawnObstacles = [];
+    const obstaclesNeeded = numToDraw;
+
+    // Try to draw from Veil
+    if (Piles.veil.drawPile.length >= obstaclesNeeded) {
+        drawnObstacles.push(...Piles.veil.drawFromDrawPile(obstaclesNeeded));
+    } else {
+        // Not enough cards, draw what we can
+        const remainingInVeil = Piles.veil.drawPile.length;
+        if (remainingInVeil > 0) {
+            drawnObstacles.push(...Piles.veil.drawFromDrawPile(remainingInVeil));
+        }
+    }
+
+    Piles.obstaclesActive = drawnObstacles;
   }
 
 })();

@@ -98,6 +98,11 @@ aside {
   margin-left: -60px;
 }
 
+/* Make the active obstacle cards both display, when two are active */
+#activeObstacle .gk-card {
+  margin-left: 0;
+}
+
 .gk-card .gk-card__corner {
   font-size: 1.5em;
   height: 100%;
