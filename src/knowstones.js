@@ -18,4 +18,29 @@ export class Knowstones {
   static save(count) {
     localStorage.setItem("knowstones", count.toString());
   }
+
+  /**
+   * Reset the number of knowstones to 0
+   */
+  static reset() {
+    localStorage.removeItem("knowstones");
+  }
+
+  /**
+   * Add a knowstone to the count
+   * @param {number} count
+   */
+  static add(count) {
+    const currentCount = this.get();
+    this.save(currentCount + count);
+  }
+
+  /**
+   * Remove knowstones from the count
+   * @param {number} count
+   */
+  static remove(count) {
+    const currentCount = this.get();
+    this.save(currentCount - count);
+  }
 }
