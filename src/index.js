@@ -161,7 +161,7 @@ const Veil = new DeckOfCards(Obstacles);
  * Initialize the piles
  * @type {Piles}
  */
-const Piles = {
+export const Piles = {
   source: Source,
   inventory: {
     i1: {
@@ -209,7 +209,7 @@ const Piles = {
   obstaclesActive: [], // The active obstacles
 };
 
-const Counters = {
+export const Counters = {
   trialScore: 0,
   trialDifficulty: 0,
   currentScore: 0,
@@ -327,7 +327,7 @@ const toggleSelection = (key) => {
 };
 
 // NEW GAME LOGIC
-const NewGame = () => {
+export const NewGame = () => {
   // Draw up all of the cards from the draw piles
   resetPiles();
 
@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /** Updates the score and resistance counters */
-function updateCounters() {
+export function updateCounters() {
   // Get the active Knowble and Weapon
   const activeKnowble = Piles.thresholdActive;
   const activeObstacles = Piles.obstaclesActive;
@@ -407,7 +407,7 @@ function updateCounters() {
 }
 
 /** Updates the UI to reflect the current state of the piles */
-function renderPiles() {
+export function renderPiles() {
  /** @type {{[x:string]: {pile: Array<GKCard | null>, targetElement: HTMLElement | null}}} */
   const PilesToRender = {
     hold: {
@@ -459,7 +459,7 @@ function renderPiles() {
 }
 
 /** Updates the UI to reflect the current state of the inventory slots */
-function renderInventorySlots() {
+export function renderInventorySlots() {
   for (let i = 1; i <= 7; i++) {
     const inventoryKey = `i${i}`;
     const inventorySlot = Piles.inventory[inventoryKey];
@@ -567,7 +567,7 @@ function renderPile(pileName, pile, targetElement) {
  * Initialize the piles with the starting cards
  * This function should be called when starting a new game
  */
-function initPiles() {
+export function initPiles() {
   // Init Threshold active card
   Piles.thresholdActive = getTopCard(Piles.threshold);
 
@@ -592,7 +592,7 @@ function initPiles() {
  * Reset the piles to their initial state
  * This function should be called when starting a new game
  */
-function resetPiles() {
+export function resetPiles() {
   // Reset Inventory cards
   moveAllInventoryToDiscard();
   let inventoryCards = getAllFromPile(Piles.source.discardPile);
@@ -615,7 +615,7 @@ function resetPiles() {
 /**
  * Play the selected cards
  */
-function playCards() {
+export function playCards() {
   // Get the current knowble and obstacle
   const activeKnowble = Piles.thresholdActive;
   const activeObstacles = Piles.obstaclesActive;
@@ -703,7 +703,7 @@ function endGame() {
  * Draw obstacles for the active knowble
  * @param {GKCard | null} knowble - The active knowble
  */
-function drawObstaclesFor(knowble) {
+export function drawObstaclesFor(knowble) {
   if (!knowble) {
     Piles.obstaclesActive = [];
     return;
