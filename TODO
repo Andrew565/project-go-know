@@ -11,6 +11,7 @@
 - [X] Create an "end game" function
 - [X] Save knowstones to local storage
 - [X] Handle "Cruel Kings" (King of clubs, gets an extra obstacle)
+- [X] Add automated tests
 - [ ] Add campaign area for "purchasing" abilities and such with knowstones
 - [ ] Do what is needed to make a "Merchant's Solitaire" mode before adding the "GK" campaign?
 - [ ] Handle hazards (lock highest-value card from Inventory)
